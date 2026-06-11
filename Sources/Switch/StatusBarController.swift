@@ -2,10 +2,22 @@ import AppKit
 
 @MainActor
 final class StatusBarController {
+    /// Lives as long as AppDelegate keeps the controller; lets windows anchor
+    /// themselves beneath the menu-bar icon.
+    @MainActor private(set) static weak var shared: StatusBarController?
+
+    // var, not let: setHidden recreates the item to bring back a dragged-off icon.
     private var item: NSStatusItem
+
+    /// Screen frame of the status-bar button.
+    var buttonScreenFrame: NSRect? {
+        guard let button = item.button, let window = button.window else { return nil }
+        return window.convertToScreen(button.convert(button.bounds, to: nil))
+    }
 
     init() {
         item = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
+        MainActor.assumeIsolated { Self.shared = self }
         configure(item)
         item.isVisible = !SwitchPreferences.shared.hideMenuBarIcon
     }
