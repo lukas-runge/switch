@@ -224,6 +224,9 @@ struct SettingsView: View {
                             RoundedRectangle(cornerRadius: 7, style: .continuous)
                                 .fill(tab == t ? prefs.accent.color.opacity(0.14) : Color.clear)
                         )
+                        // Plain buttons only hit-test visible pixels — make the
+                        // whole padded pill clickable, not just the text.
+                        .contentShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
                 }
                 .buttonStyle(.plain)
             }
