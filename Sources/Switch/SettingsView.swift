@@ -784,6 +784,9 @@ struct SettingsView: View {
                             .font(.system(size: 11))
                             .foregroundStyle(.secondary)
                     }
+                    // Nothing in this card is greedy — stretch it so it lines
+                    // up with the cards on the other tabs.
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(14)
                     .background(rowBackground)
                 }
