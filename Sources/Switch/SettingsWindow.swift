@@ -27,13 +27,18 @@ final class SettingsWindow {
 
         let host = NSHostingController(rootView: SettingsView())
         let win = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 500, height: 460),
+            contentRect: .zero,
             styleMask: [.titled, .closable],
             backing: .buffered,
             defer: false
         )
         win.title = "Switch Settings"
         win.contentViewController = host
+        // Size to the SwiftUI content before the window becomes visible —
+        // otherwise it shows up at a stale size and snaps to fit one frame
+        // later (visible flicker).
+        host.view.layoutSubtreeIfNeeded()
+        win.setContentSize(host.view.fittingSize)
         win.center()
         win.isReleasedWhenClosed = false
         win.delegate = SettingsWindowDelegate.shared

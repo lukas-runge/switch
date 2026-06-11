@@ -198,9 +198,14 @@ struct SettingsView: View {
                 case .about:       AboutView()
                 }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .frame(maxWidth: .infinity)
         }
-        .frame(width: 500, height: 460)
+        // Picker keeps a fixed height (long list, scrolls); every other tab
+        // sizes the window to its content. fixedSize turns the content height
+        // into a hard requirement — without it the hosting window has no reason
+        // to shrink when switching to a shorter tab.
+        .frame(width: 500, height: tab == .picker ? 460 : nil)
+        .fixedSize(horizontal: false, vertical: true)
         .onAppear { model.refresh() }
     }
 
@@ -283,6 +288,7 @@ struct SettingsView: View {
             }
             .padding(24)
         }
+        .fixedSize(horizontal: false, vertical: true)
     }
 
     private var pickerTab: some View {
@@ -800,6 +806,7 @@ struct SettingsView: View {
             }
             .padding(24)
         }
+        .fixedSize(horizontal: false, vertical: true)
     }
 
     private var permissionsTab: some View {
@@ -922,6 +929,7 @@ struct PermissionsTabView: View {
             }
             .padding(24)
         }
+        .fixedSize(horizontal: false, vertical: true)
         .onAppear { perms.startPolling() }
         .onDisappear { perms.stopPolling() }
     }
