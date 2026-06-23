@@ -9,9 +9,13 @@ final class StatusBarController {
     // var, not let: setHidden recreates the item to bring back a dragged-off icon.
     private var item: NSStatusItem
 
-    /// Screen frame of the status-bar button.
+    /// Screen frame of the status-bar button, or nil when the icon is hidden —
+    /// a hidden item still has a button/window but at a degenerate off-screen
+    /// frame, which would otherwise drag the Settings window into a corner.
     var buttonScreenFrame: NSRect? {
-        guard let button = item.button, let window = button.window else { return nil }
+        guard item.isVisible,
+              let button = item.button,
+              let window = button.window else { return nil }
         return window.convertToScreen(button.convert(button.bounds, to: nil))
     }
 
