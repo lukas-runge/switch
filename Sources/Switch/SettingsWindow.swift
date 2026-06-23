@@ -55,13 +55,24 @@ final class SettingsWindow {
     /// Anchor below the menu-bar icon (menu-extra style); fall back to the
     /// top-right corner of the screen, then to plain centering.
     private func position(_ win: NSWindow) {
-        let anchor = StatusBarController.shared?.buttonScreenFrame
-        let screen = anchor.flatMap { a in NSScreen.screens.first { $0.frame.intersects(a) } }
+        let rawAnchor = StatusBarController.shared?.buttonScreenFrame
+        let screen = rawAnchor.flatMap { a in NSScreen.screens.first { $0.frame.intersects(a) } }
             ?? NSScreen.main ?? NSScreen.screens.first
-        guard let visible = screen?.visibleFrame else {
+        guard let screen else {
             win.center()
             return
         }
+        let visible = screen.visibleFrame
+
+        // Trust the icon as anchor only when it's a real, on-screen spot in this
+        // screen's menu bar. A hidden icon returns nil; menu-bar managers like
+        // Bartender park the item off-screen and report a bogus (top-left) frame.
+        // Both fall back to the top-right corner, just below the menu bar.
+        let anchor = rawAnchor.flatMap { a -> NSRect? in
+            let center = NSPoint(x: a.midX, y: a.midY)
+            return screen.frame.contains(center) && a.midY >= visible.maxY ? a : nil
+        }
+
         var origin: NSPoint
         if let anchor {
             origin = NSPoint(
